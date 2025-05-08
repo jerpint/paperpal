@@ -1,4 +1,4 @@
-🚨 Development has moved to https://github.com/mila-iqia/paperpal
+🚨 Development has moved to https://github.com/milatechtransfer/paperpal
 
 # paperpal
 
