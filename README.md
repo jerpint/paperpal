@@ -6,6 +6,10 @@ MCP Extension to aid you in searching and writing literature reviews
 
 > Check out this [conversation with Claude](https://claude.ai/share/0572fbd9-3ba2-4143-9f7f-5cae205c6d0d) to see what it can do
 
+<a href="https://glama.ai/mcp/servers/@jerpint/paperpal">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@jerpint/paperpal/badge" alt="paperpal MCP server" />
+</a>
+
 ## How it works
 
 `paperpal` gives your LLMs access to [arxiv](https://www.arxiv.org) and [Hugging Face papers](https://huggingface.co/papers).
