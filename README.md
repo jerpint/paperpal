@@ -1,6 +1,7 @@
 🚨 Development has moved to https://github.com/milatechtransfer/paperpal
 
 # paperpal
+[![smithery badge](https://smithery.ai/badge/@jerpint/paperpal)](https://smithery.ai/server/@jerpint/paperpal)
 
 MCP Extension to aid you in searching and writing literature reviews
 
@@ -23,6 +24,14 @@ Of course, this tool is as good as the sum of its parts. LLMs can still hallucin
 ## Quickstart
 
 There are many different ways with which you can interact with an MCP server.
+
+### Installing via Smithery
+
+To install paperpal for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@jerpint/paperpal):
+
+```bash
+npx -y @smithery/cli install @jerpint/paperpal --client claude
+```
 
 ### Claude Desktop App
 
