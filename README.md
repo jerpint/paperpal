@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/jerpint-paperpal-badge.png)](https://mseep.ai/app/jerpint-paperpal)
+
 🚨 Development has moved to https://github.com/milatechtransfer/paperpal
 
 # paperpal
