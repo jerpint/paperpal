@@ -1,83 +1,46 @@
-🚨 Development has moved to https://github.com/milatechtransfer/paperpal
-
 # paperpal
 
-MCP Extension to aid you in searching and writing literature reviews
+ML literature research for agents and humans: **find it, verify it, score it, cite it.**
 
-> Check out this [conversation with Claude](https://claude.ai/share/0572fbd9-3ba2-4143-9f7f-5cae205c6d0d) to see what it can do
+- **Search:** top-tier venues (NeurIPS / ICML / ICLR / AISTATS…), Hugging Face papers (with upvotes), daily papers, trending models
+- **Verify:** arXiv metadata (venue hints), Semantic Scholar (venue, citations), and full text via [arxiv-txt.org](https://arxiv-txt.org) with regex grep so you quote numbers in context
+- **Write:** a barebones pointers template, then render every citation as a link into a static page that pastes into Google Docs cleanly
+- **Methodology:** [`skills/paperpal/METHODOLOGY.md`](skills/paperpal/METHODOLOGY.md) covers sources, the verification loop, the 1–5 credibility rubric, tags and failure modes
 
-## How it works
+One codebase, three surfaces:
 
-`paperpal` gives your LLMs access to [arxiv](https://www.arxiv.org) and [Hugging Face papers](https://huggingface.co/papers).
-You can then have a natural conversation with your favourite LLMs (e.g. Claude) and have it guide you.
+| surface | entry point |
+|---|---|
+| Claude Code plugin | `.claude-plugin/plugin.json` + `skills/paperpal/SKILL.md` + `.mcp.json` |
+| Codex plugin (portable [Agent Plugins](https://agent-plugins.org) 1.0.0) | `plugin.json` + `mcp.json` + `skills/` + `skills/paperpal/agents/openai.yaml` |
+| any MCP client (Claude Desktop, Cursor…) | `uv run --directory /path/to/paperpal paperpal-mcp` |
+| CLI | `uv run paperpal -h` |
 
-You can:
+## Install
 
-* Discuss papers
-* Look for new papers
-* Organize ideas for liteature reviews
-* etc.
+**Claude Code** (local): `claude --plugin-dir /path/to/paperpal`
 
-Of course, this tool is as good as the sum of its parts. LLMs can still hallucinate, and semantic search is never perfect.
-
-## Quickstart
-
-There are many different ways with which you can interact with an MCP server.
-
-### Claude Desktop App
-
-> If this is your first time using an MCP server for Claude Desktop App, see https://modelcontextprotocol.io/quickstart/user
-
-First, clone this repository locally:
-
-    git clone https://github.com/jerpint/paperpal
-
-Next, add the extension to your app. Open your configuration file (on macOS this should be `~/Library/Application Support/Claude/claude_desktop_config.json`) and and add the following to the extension:
-
-For example on MacOS:
-
-```python
-{
-  "mcpServers": {
-    "paperpal": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/Users/<username>/paperpal",
-        "run",
-        "paperpal.py"
-      ]
-    }
-  }
-}
+**Codex** (local marketplace):
+```bash
+codex plugin marketplace add /path/to/paperpal   # reads .agents/plugins/marketplace.json
+codex plugin add paperpal@paperpal-local
+codex mcp list                                   # paperpal server, cwd = plugin root
 ```
 
-Restart your Claude Desktop App and you should see it appear.
+**Skill only** (any agent that reads the open skills format): copy `skills/paperpal/` into `.agents/skills/` (Codex) or your harness's skills folder.
 
+## Quickstart (CLI)
 
-### Cursor
-
-> If this is your first time using an MCP server for Cursor, see https://docs.cursor.com/context/model-context-protocol#remote-development
-
-First, clone this repository locally:
-
-    git clone https://github.com/jerpint/paperpal
-
-
-Add this to the root of the project in a `.cursor/mcp.json` file:
-
+```bash
+uv run paperpal top "persona consistency role-playing" --n 5
+uv run paperpal meta 2510.22954
+uv run paperpal full 2310.11324 --grep "76 accuracy points"
+uv run paperpal card 2510.22954        # evidence card → suggested credibility band
+uv run paperpal new notes.md --title "My topic"
+uv run paperpal render notes.md        # → notes.html (static, gdoc-pasteable)
 ```
-{
-  "mcpServers": {
-    "paperpal": {
-      "command": "/Users/jeremypinto/.cargo/bin/uv",
-      "args": [
-        "--directory",
-        "/Users/jeremypinto/paperpal",
-        "run",
-        "paperpal.py"
-      ]
-    }
-  }
-}
-```
+
+## Status
+
+`0.2.0.dev0`, a local rewrite of paperpal 0.1 (an MCP server with HF search and arXiv details).
+Planned: BibTeX export (arxiv-txt already returns it; `parse_abs_text` captures it). Set `S2_API_KEY` for reliable Semantic Scholar lookups.

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "paperpal",
+  "version": "0.2.0-dev",
+  "description": "ML literature research for agents: top-tier venue search, arXiv / Hugging Face / Semantic Scholar, full-text verification, credibility scoring, and gdoc-ready notes.",
+  "author": { "name": "Jeremy Pinto" },
+  "homepage": "https://github.com/jerpint/paperpal",
+  "repository": "https://github.com/jerpint/paperpal",
+  "license": "MIT",
+  "keywords": ["research", "arxiv", "papers", "literature-review", "mcp", "ml"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "paperpal",
+        "shortDescription": "Traceable ML literature research: find, verify, score, cite.",
+        "category": "Productivity"
+      }
+    }
+  }
+}
