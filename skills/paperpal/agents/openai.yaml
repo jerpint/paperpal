@@ -1,0 +1,9 @@
+interface:
+  display_name: "paperpal"
+  short_description: "Traceable ML literature research: find, verify, score, cite."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "paperpal"
+      description: "paperpal MCP server (bundled with the plugin; see mcp.json)"
