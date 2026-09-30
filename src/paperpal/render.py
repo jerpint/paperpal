@@ -1,6 +1,6 @@
 """Render research notes: linkify citations, then write a static, Google-Docs-pasteable HTML page.
 
-The HTML is deliberately barebones: no scripts, Arial, black text, underlined blue links,
+The HTML is deliberately barebones: no scripts (except KaTeX when the notes contain LaTeX), Arial, black text, underlined blue links,
 bordered tables. Select all → paste into Google Docs keeps links and tables.
 """
 from __future__ import annotations
@@ -41,11 +41,38 @@ def bare_ids(html_body: str) -> list[str]:
     return sorted(set(re.findall(rf"(?<![/\[\w.]){_ID}(?![\]\w/])", unlinked)))
 
 
+_DISPLAY = re.compile(r"\$\$(.+?)\$\$", re.S)
+_INLINE = re.compile(r"(?<![\\$\w])\$(?=\S)([^$\n]+?)(?<=\S)\$(?![\d$\w])")
+KATEX = ('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">\n'
+         '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>\n'
+         '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" '
+         'onload="renderMathInElement(document.body,{delimiters:[{left:\'\\\\[\',right:\'\\\\]\',display:true},'
+         '{left:\'\\\\(\',right:\'\\\\)\',display:false}],throwOnError:false})"></script>\n')
+
+
+def _protect_math(md: str) -> tuple[str, list[str]]:
+    """Swap $$..$$ / $..$ for placeholders so markdown doesn't eat underscores or backslashes."""
+    spans: list[str] = []
+
+    def keep(tex: str, display: bool) -> str:
+        l, r = (r"\[", r"\]") if display else (r"\(", r"\)")
+        spans.append(l + _html.escape(tex.strip()) + r)
+        return f"PPMATH{len(spans) - 1}X"
+
+    md = _DISPLAY.sub(lambda m: keep(m[1], True), md)
+    md = _INLINE.sub(lambda m: keep(m[1], False), md)
+    return md, spans
+
+
 def to_html(md: str, title: str = "Research notes") -> str:
+    """Static HTML. Only pages that contain LaTeX get a script: KaTeX from a CDN, to render the math."""
+    md, spans = _protect_math(md)
     body = markdown.markdown(md, extensions=["tables", "sane_lists"])
+    body = re.sub(r"PPMATH(\d+)X", lambda m: spans[int(m[1])], body)
+    head_extra = KATEX if spans else ""
     return (f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">\n'
             f'<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-            f"<title>{_html.escape(title)}</title>\n<style>\n{CSS}\n</style></head><body>\n{body}\n</body></html>\n")
+            f"<title>{_html.escape(title)}</title>\n{head_extra}<style>\n{CSS}\n</style></head><body>\n{body}\n</body></html>\n")
 
 
 def render_file(src: str | Path, out_html: str | Path | None = None, title: str | None = None,

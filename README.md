@@ -7,7 +7,7 @@ paperpal is a plugin for coding agents (Claude Code, Codex, and any MCP client).
 - **Find:** semantic search over top-tier venues (NeurIPS, ICML, ICLR, AISTATS, …), Hugging Face papers (with community upvotes), today's daily papers, trending models
 - **Verify:** arXiv metadata (current title and version, venue hints), Semantic Scholar (venue, citations), and **full text** via [arxiv-txt.org](https://arxiv-txt.org) with regex grep, so numbers get quoted in context
 - **Score:** an evidence card per paper (venue from three sources, citations, age, code link) with a *suggested* 1–5 credibility band. You or your agent make the final call.
-- **Cite:** a barebones notes template, rendered to a static HTML page where every citation is a clickable link. Select all → paste into Google Docs, and links and tables survive.
+- **Cite:** a barebones notes template, rendered to a static HTML page where every citation is a clickable link. Select all → paste into Google Docs, and links and tables survive. LaTeX (`$..$`, `$$..$$`) is rendered with KaTeX; only pages that contain math get a script.
 
 > LLMs can still hallucinate and semantic search is never perfect. paperpal is built around making every claim checkable.
 

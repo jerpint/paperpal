@@ -30,6 +30,18 @@ def test_html_is_static():
     assert "<script" not in page and "<table>" in page
 
 
+def test_math_survives_markdown():
+    page = to_html("Score $s_i = w^\\top h_i$ and $p_j$.\n\n$$p_i = \\frac{e^{s_i}}{\\sum_j e^{s_j}}$$")
+    assert r"\(s_i = w^\top h_i\)" in page and r"\(p_j\)" in page
+    assert r"\[p_i = \frac{e^{s_i}}{\sum_j e^{s_j}}\]" in page
+    assert "<em>" not in page and "katex" in page
+
+
+def test_prices_are_not_math():
+    page = to_html("It costs $0.65 for 25k reviews, or $5 total.")
+    assert "$0.65" in page and "katex" not in page
+
+
 ABS = """# Title
 User as Engram: Internalizing Per-User Memory
 
