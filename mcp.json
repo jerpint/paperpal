@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "paperpal": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--quiet", "paperpal-mcp"],
+      "cwd": "${PLUGIN_ROOT}"
+    }
+  }
+}

@@ -1,83 +1,147 @@
-🚨 Development has moved to https://github.com/milatechtransfer/paperpal
-
 # paperpal
 
-MCP Extension to aid you in searching and writing literature reviews
+**ML literature research for agents and humans: find it, verify it, score it, cite it.**
 
-> Check out this [conversation with Claude](https://claude.ai/share/0572fbd9-3ba2-4143-9f7f-5cae205c6d0d) to see what it can do
+paperpal is a plugin for coding agents (Claude Code, Codex, and any MCP client). It gives your agent a research **methodology** and the **tools** to follow it:
 
-## How it works
+- **Find:** semantic search over top-tier venues (NeurIPS, ICML, ICLR, AISTATS, …), Hugging Face papers (with community upvotes), today's daily papers, trending models
+- **Verify:** arXiv metadata (current title and version, venue hints), Semantic Scholar (venue, citations), and **full text** via [arxiv-txt.org](https://arxiv-txt.org) with regex grep, so numbers get quoted in context
+- **Score:** an evidence card per paper (venue from three sources, citations, age, code link) with a *suggested* 1–5 credibility band. You or your agent make the final call.
+- **Cite:** a barebones notes template, rendered to a static HTML page where every citation is a clickable link. Select all → paste into Google Docs, and links and tables survive. LaTeX (`$..$`, `$$..$$`) is rendered with KaTeX; only pages that contain math get a script.
 
-`paperpal` gives your LLMs access to [arxiv](https://www.arxiv.org) and [Hugging Face papers](https://huggingface.co/papers).
-You can then have a natural conversation with your favourite LLMs (e.g. Claude) and have it guide you.
+> LLMs can still hallucinate and semantic search is never perfect. paperpal is built around making every claim checkable.
 
-You can:
+---
 
-* Discuss papers
-* Look for new papers
-* Organize ideas for liteature reviews
-* etc.
+## Install
 
-Of course, this tool is as good as the sum of its parts. LLMs can still hallucinate, and semantic search is never perfect.
+### Claude Code
 
-## Quickstart
+```bash
+git clone https://github.com/jerpint/paperpal
+claude --plugin-dir ./paperpal
+```
 
-There are many different ways with which you can interact with an MCP server.
+The plugin registers the `paperpal` skill and the `paperpal` MCP server (run with `uv`).
 
-### Claude Desktop App
+### Codex
 
-> If this is your first time using an MCP server for Claude Desktop App, see https://modelcontextprotocol.io/quickstart/user
+paperpal ships a portable [Agent Plugins 1.0.0](https://agent-plugins.org) manifest and a local marketplace:
 
-First, clone this repository locally:
+```bash
+git clone https://github.com/jerpint/paperpal
+codex plugin marketplace add ./paperpal
+codex plugin add paperpal@paperpal-local
+codex mcp list        # → paperpal
+```
 
-    git clone https://github.com/jerpint/paperpal
+### Claude Desktop, Cursor, or any MCP client
 
-Next, add the extension to your app. Open your configuration file (on macOS this should be `~/Library/Application Support/Claude/claude_desktop_config.json`) and and add the following to the extension:
+Add the server to your client's MCP config (for Claude Desktop on macOS, that's `~/Library/Application Support/Claude/claude_desktop_config.json`; for Cursor, `.cursor/mcp.json`):
 
-For example on MacOS:
-
-```python
+```json
 {
   "mcpServers": {
     "paperpal": {
       "command": "uv",
-      "args": [
-        "--directory",
-        "/Users/<username>/paperpal",
-        "run",
-        "paperpal.py"
-      ]
+      "args": ["run", "--directory", "/path/to/paperpal", "paperpal-mcp"]
     }
   }
 }
 ```
 
-Restart your Claude Desktop App and you should see it appear.
+### Skill only
 
+Any agent that reads the open skills format can use the methodology without the server: copy `skills/paperpal/` into your agent's skills folder (e.g. `.agents/skills/` for Codex). The skill falls back to the CLI.
 
-### Cursor
+### CLI
 
-> If this is your first time using an MCP server for Cursor, see https://docs.cursor.com/context/model-context-protocol#remote-development
-
-First, clone this repository locally:
-
-    git clone https://github.com/jerpint/paperpal
-
-
-Add this to the root of the project in a `.cursor/mcp.json` file:
-
+```bash
+cd paperpal && uv sync
+uv run paperpal -h
 ```
-{
-  "mcpServers": {
-    "paperpal": {
-      "command": "/Users/jeremypinto/.cargo/bin/uv",
-      "args": [
-        "--directory",
-        "/Users/jeremypinto/paperpal",
-        "run",
-        "paperpal.py"
-      ]
-    }
-  }
-}
+
+Requires [uv](https://docs.astral.sh/uv/) and Python ≥ 3.11.
+
+---
+
+## Use
+
+Ask your agent things like:
+
+- *"Find peer-reviewed evidence that alignment training reduces output diversity, and score each source."*
+- *"Was this arXiv paper accepted anywhere? Check the exact number it reports for X."*
+- *"Prep research notes on small language models for a Google Doc: pointers only, every citation linked."*
+
+Or drive it directly:
+
+```bash
+uv run paperpal top "persona consistency role-playing" --n 5    # top-tier venues
+uv run paperpal hf "ternary quantization" --n 5                 # Hugging Face papers
+uv run paperpal daily                                           # today's HF daily papers
+uv run paperpal meta 2510.22954                                 # arXiv metadata + venue hints
+uv run paperpal card 2510.22954                                 # evidence card → suggested band
+uv run paperpal full 2310.11324 --grep "76 accuracy points"     # verify a number in the full text
+uv run paperpal new notes.md --title "My topic"                 # start from the template
+uv run paperpal render notes.md                                 # → notes.html (gdoc-pasteable)
 ```
+
+### Tools
+
+| MCP tool | CLI | what it does |
+|---|---|---|
+| `search_top_tier` | `top` | semantic search over top-tier venue papers ([paperz](https://paperz.vercel.app)) |
+| `search_hf` | `hf` | Hugging Face papers search (recency, upvotes) |
+| `daily_papers` | `daily` | today's Hugging Face daily papers |
+| `trending_models` | `trending` | trending models on the Hub |
+| `arxiv_meta` | `meta` | arXiv title, authors, versions, comment / journal-ref venue hints |
+| `s2_lookup` | `s2` | Semantic Scholar venue and citation counts |
+| `evidence_card` | `card` | credibility evidence + a suggested 1–5 band with reasons |
+| `abstract` | `abs` | abstract, categories and BibTeX ([arxiv-txt](https://arxiv-txt.org)) |
+| `full_text` | `full` | full paper text, or regex matches with context |
+| `render_notes` | `render` | linkify citations and write static, gdoc-pasteable HTML |
+| — | `new` | create a notes doc from the template |
+
+---
+
+## The methodology
+
+The skill (`skills/paperpal/SKILL.md`) tells agents how to research. The full guide is [`METHODOLOGY.md`](skills/paperpal/METHODOLOGY.md), which also works standalone for humans. In short:
+
+1. **Primary sources only.** Papers, model cards, repos, vendor posts. Blog summaries are leads, not citations.
+2. **Verify every kept item:** metadata → top-tier venue → the exact number in the full text.
+3. **Score credibility (1–5)** on venue, lab, public code and data, age, and replication. Build arguments on ≥4.5, hedge 3–4, and footnote or drop ≤2.
+4. **Tag everything:**
+   - source type: `[peer-reviewed]` `[preprint]` `[industry]` `[secondary]` `[news]`
+   - status: known / inferred / unknown
+5. **Pointers, not prose,** unless asked to write.
+6. **Every citation is a link.** Render to static HTML before sharing.
+
+---
+
+## Configuration
+
+| env var | purpose |
+|---|---|
+| `S2_API_KEY` | optional [Semantic Scholar API key](https://www.semanticscholar.org/product/api). Unauthenticated requests share a small rate limit. |
+
+paperpal throttles requests per host (arXiv ≈ 1 request / 3 s), retries on 406 / 429 / 5xx, and falls back from arXiv to Hugging Face to arxiv-txt for metadata.
+
+## Development
+
+See [`AGENTS.md`](AGENTS.md). Quick version:
+
+```bash
+uv sync
+uv run pytest -q              # offline tests
+claude plugin validate .      # Claude Code manifest
+```
+
+## Roadmap
+
+- BibTeX export (the arxiv-txt parser already captures BibTeX)
+- More venue sources for the evidence card
+
+## License
+
+MIT
