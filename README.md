@@ -78,6 +78,7 @@ Or drive it directly:
 ```bash
 uv run paperpal top "persona consistency role-playing" --n 5    # top-tier venues
 uv run paperpal hf "ternary quantization" --n 5                 # Hugging Face papers
+uv run paperpal dair                                            # DAIR weekly curation → JSON, discovery only
 uv run paperpal daily                                           # today's HF daily papers
 uv run paperpal meta 2510.22954                                 # arXiv metadata + venue hints
 uv run paperpal card 2510.22954                                 # evidence card → suggested band
@@ -90,6 +91,7 @@ uv run paperpal render notes.md                                 # → notes.html
 
 | MCP tool | CLI | what it does |
 |---|---|---|
+| `dair_papers` | `dair` | latest public DAIR weekly shortlist; verify candidates on arXiv before citing |
 | `search_top_tier` | `top` | semantic search over top-tier venue papers ([paperz](https://paperz.vercel.app)) |
 | `search_hf` | `hf` | Hugging Face papers search (recency, upvotes) |
 | `daily_papers` | `daily` | today's Hugging Face daily papers |

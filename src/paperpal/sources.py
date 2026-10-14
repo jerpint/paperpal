@@ -268,5 +268,48 @@ def format_rows(rows: list[dict], with_abstract: bool = False) -> str:
     return "\n".join(lines) if lines else "(no results)"
 
 
-__all__ = ["search_top_tier", "search_hf", "daily_papers", "trending_models", "arxiv_meta",
+__all__ = ["dair_papers", "search_top_tier", "search_hf", "daily_papers", "trending_models", "arxiv_meta",
            "abstract", "full_text", "s2_lookup", "format_rows"]
+
+
+# DAIR curation is discovery metadata, never primary evidence.
+DAIR_BASE = "https://raw.githubusercontent.com/dair-ai/AI-Papers-of-the-Week/main/"
+
+def dair_papers() -> dict:
+    """Latest public weekly shortlist; arXiv IDs require primary-source verification."""
+    import hashlib
+    index = _get(DAIR_BASE + 'README.md').text
+    match = re.search(r'\]\((years/\d{4}\.md)#[^)]+\)', index)
+    if not match:
+        raise SourceError('DAIR index format changed; no latest issue found.')
+    path = match.group(1)
+    content = _get(DAIR_BASE + path).text
+    sections = re.split(r'^## ', content, flags=re.M)
+    if len(sections) < 2:
+        raise SourceError('DAIR year format changed; no issue found.')
+    latest = sections[1]
+    papers = []
+    seen = set()
+    for line in latest.splitlines():
+        title = re.search(r'\d+\)\s*\*\*(.+?)\*\*', line)
+        if not title:
+            continue
+        urls = re.findall(r'\[Paper\]\((https://[^)]+)\)', line)
+        for url in urls:
+            identifier = re.search(r'(\d{4}\.\d{4,5})(v\d+)?(?:[/?#]|$)', url)
+            if not identifier:
+                continue
+            aid = identifier.group(1)
+            if aid in seen:
+                continue
+            seen.add(aid)
+            papers.append({'curator_label': title.group(1), 'discovery_url': url,
+                           'arxiv_id': aid, 'primary_url': 'https://arxiv.org/abs/' + aid,
+                           'read_status': 'unread', 'metadata_status': 'ID inferred from link; verify on arXiv'})
+    if not papers:
+        raise SourceError('No arXiv candidates parsed; inspect feed format.')
+    return {'curator': 'DAIR.AI', 'issue': latest.splitlines()[0],
+                      'source_url': DAIR_BASE + path, 'source_sha256': hashlib.sha256(content.encode()).hexdigest(),
+                      'fetched_at': dt.datetime.now(dt.timezone.utc).isoformat(),
+                      'policy': 'Discovery only. Read and cite versioned arXiv originals; summaries are not evidence.',
+                      'papers': papers}

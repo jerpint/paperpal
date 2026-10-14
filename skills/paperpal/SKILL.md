@@ -10,8 +10,8 @@ Follow the full methodology in [METHODOLOGY.md](METHODOLOGY.md). The essentials 
 ## Tools
 
 The same functions are exposed three ways; use whichever your harness has:
-- **MCP** (`paperpal` server): `search_top_tier`, `search_hf`, `daily_papers`, `trending_models`, `arxiv_meta`, `s2_lookup`, `evidence_card`, `abstract`, `full_text`, `render_notes`
-- **CLI**: `paperpal top|hf|daily|trending|meta|s2|card|abs|full|new|render …` (run `paperpal -h`)
+- **MCP** (`paperpal` server): `search_top_tier`, `search_hf`, `daily_papers`, `dair_papers`, `trending_models`, `arxiv_meta`, `s2_lookup`, `evidence_card`, `abstract`, `full_text`, `render_notes`
+- **CLI**: `paperpal top|hf|daily|dair|trending|meta|s2|card|abs|full|new|render …` (run `paperpal -h`)
 - **Python**: `from paperpal import sources, render`
 
 ## Rules
@@ -35,3 +35,7 @@ The same functions are exposed three ways; use whichever your harness has:
 ## Starting a notes doc
 
 `paperpal new notes.md --title "…"` creates a doc from the barebones template (sections by claim, quick map, credibility table, before-citing list). When it's filled in, `paperpal render notes.md` writes `notes.html`: static, no scripts, plain styling. Select all and paste into Google Docs, and links and tables survive.
+
+## Curated discovery
+
+Use `dair_papers` / `paperpal dair` for DAIR’s latest public weekly shortlist. Labels and IDs are curator-supplied leads, not verified metadata. Verify the identifier and title on arXiv, pin the version, and read the original before citing. Keep the discovery URL separate from the primary source. Do not infer paper quality from selection. No account, recurring schedule, or DAIR MCP installation is required.

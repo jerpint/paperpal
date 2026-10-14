@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "paperpal",
-  "version": "0.2.0-dev",
+  "version": "0.2.0-dev.1",
   "description": "ML literature research for agents: top-tier venue search, arXiv / Hugging Face / Semantic Scholar, full-text verification, credibility scoring, and gdoc-ready notes.",
   "author": { "name": "Jeremy Pinto" },
   "homepage": "https://github.com/jerpint/paperpal",

@@ -96,6 +96,13 @@ def render_notes(md_path: str, out_html: str = "") -> str:
     return _safe(run)
 
 
+@mcp.tool()
+def dair_papers() -> str:
+    """Latest DAIR public weekly shortlist as JSON. Discovery only: verify IDs, read and cite arXiv originals."""
+    import json
+    return _safe(lambda: json.dumps(sources.dair_papers(), indent=2))
+
+
 def main() -> None:
     mcp.run(transport="stdio")
 
