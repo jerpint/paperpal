@@ -1,6 +1,6 @@
 [project]
 name = "paperpal"
-version = "0.2.0.dev0"
+version = "0.2.0.dev1"
 description = "ML literature research for agents and humans: top-tier search, arXiv/HF/Semantic Scholar, full-text verification, and gdoc-ready notes."
 readme = "README.md"
 requires-python = ">=3.11"

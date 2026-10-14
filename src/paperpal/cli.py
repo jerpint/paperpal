@@ -33,6 +33,7 @@ def main(argv: list[str] | None = None) -> int:
         s.add_argument("--abs", action="store_true")
     for name in ("daily", "trending"):
         sub.add_parser(name).add_argument("--n", type=int, default=20)
+    sub.add_parser("dair", help="Latest DAIR weekly shortlist as JSON; discovery only")
     sub.add_parser("meta").add_argument("ids", nargs="+")
     s = sub.add_parser("s2")
     s.add_argument("id", nargs="?")
@@ -55,6 +56,8 @@ def main(argv: list[str] | None = None) -> int:
         if a.cmd in ("top", "hf"):
             fn = sources.search_top_tier if a.cmd == "top" else sources.search_hf
             print(sources.format_rows(fn(" ".join(a.query), a.n), a.abs))
+        elif a.cmd == "dair":
+            print(json.dumps(sources.dair_papers(), indent=2))
         elif a.cmd == "daily":
             for r in sources.daily_papers(a.n):
                 print(f"- ▲{r['upvotes']} {r['title']}\n  {r['url']}")

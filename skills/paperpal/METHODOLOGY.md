@@ -97,6 +97,7 @@ Adjust for: **commercial interest** (−), **LLM-authored benchmarks** (−), **
 
 | tool | does |
 |---|---|
+| `dair_papers` | latest DAIR weekly shortlist; discovery links and unverified arXiv IDs, not evidence |
 | `search_top_tier(query, n)` | peer-reviewed venue search (paperz) |
 | `search_hf(query, n)` | Hugging Face papers search (recency, upvotes) |
 | `trending(kind)` | HF trending models, or daily papers |
